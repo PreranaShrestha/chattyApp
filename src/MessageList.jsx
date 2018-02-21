@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import Message from './Message.jsx'
+import Message from './Message.jsx';
+
 class MessageList extends Component {
   render() {
-    const newMessages = this.props.messages.map((message) => {
-      return (<Message type={message.type} key={message.id} username={message.username} content={message.content} />);
+    console.log(this.props.messagesList);
+    const newMessages = this.props.messagesList.map((message) => {
+      return (<Message type={message.type} key={message.id}  username={message.username} userColor={message.userColor} content={message.content} />);
     });
-
     return (
       <main className="messages">
         {newMessages}
@@ -13,4 +14,5 @@ class MessageList extends Component {
     );
   }
 }
+
 export default MessageList;

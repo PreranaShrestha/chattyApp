@@ -16,21 +16,34 @@ const server = express()
   .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening on ${ PORT }`));
 
 // Create the WebSockets server
+const colorList = ["#00688B", "#a4d7e7", "#00008B", "#00ff00"];
+let colorPicker = 0;
 const wss = new SocketServer({ server });
 
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
-wss.on('connection', (ws) => {
-  const message = {
-    type: "userCountChange",
-    userCount: wss.clients.size
-  }
+
+function boardcastMessage(message) {
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(message));
     }
   });
+}
+
+
+wss.on('connection', (ws) => {
+  colorPicker = colorPicker % 4;
+  var color = colorList[colorPicker];
+
+  let message = {
+    userColor: color,
+    type: "userCountChange",
+    userCount: wss.clients.size,
+  }
+  boardcastMessage(message);
+
   ws.on('message', function incoming(message) {
     let msg = JSON.parse(message);
     switch(msg.type) {
@@ -38,37 +51,33 @@ wss.on('connection', (ws) => {
       let newPostMessage = {
           type: "incomingNotification",
           newUsername: msg.username,
+          userColor: color,
           id: uuidv4()
         }
-        wss.clients.forEach(function each(client) {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(newPostMessage));
-          }
-        });
-
+        boardcastMessage(newPostMessage);
         break;
       case "postMessage":
         let newMessage = {
           type: "incomingMessage",
           id: uuidv4(),
-          username: msg.username,
+          username: msg.username.name,
+          userColor: color,
           content: msg.content
         }
-        wss.clients.forEach(function each(client) {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(newMessage));
-          }
-        });
+        boardcastMessage(newMessage);
         break;
       default:
         // show an error in the console if the message type is unknown
         throw new Error("Unknown event type " + data.type);
     }
-
-
   });
 
-
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+    const message = {
+      type: "userCountChange",
+      userCount: wss.clients.size,
+    }
+    oardcastMessage(message);
+  });
 });

@@ -8,7 +8,7 @@ class App extends Component {
     super(props);
     this.state = {
       countUser: 0,
-      currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
+      currentUser: {name: "Anonymous", userColor: "black"}, // optional. if currentUser is not defined, it means the user is Anonymous
       messages: []
     }
   }
@@ -17,45 +17,46 @@ class App extends Component {
     this.socket = new WebSocket("ws://0.0.0.0:3001");
     this.socket.onmessage =  (message) => {
       let newMessage = JSON.parse(message.data);
-      if(newMessage.type === "incomingNotification"){
+      if (newMessage.type === "incomingNotification") {
         var content = this.state.currentUser.name + " has changed name to " + newMessage.newUsername;
         newMessage.content = content;
         this.setState({
           currentUser: {name: newMessage.newUsername},
           messages : this.state.messages.concat(newMessage)
         });
-      } else if(newMessage.type === "incomingMessage") {
+      } else if (newMessage.type === "incomingMessage") {
         let newMessage = JSON.parse(message.data);
         let oldMessage = this.state.messages;
         oldMessage.push(newMessage);
         this.setState({
-        messages: oldMessage
+          messages: oldMessage
         });
-      } else if(newMessage.type === "userCountChange") {
+      } else if (newMessage.type === "userCountChange") {
         this.setState({
-          countUser: newMessage.userCount
+          countUser: newMessage.userCount,
+          currentUser: { name: this.state.currentUser.name, userColor: newMessage.userColor}
         });
       }
     }
   }
 
-
   newMessage(message) {
-     this.socket.send(JSON.stringify(message));
+    this.socket.send(JSON.stringify(message));
   }
+
   newUser(user) {
     this.socket.send(JSON.stringify(user));
   }
 
-
   render() {
     return (
       <div>
-      <Nav countUser={this.state.countUser}/>
-      <MessageList messages={this.state.messages} />
-      <ChatBar currentUser={this.state.currentUser.name} newUser={this.newUser.bind(this)} newMessage={this.newMessage.bind(this)}/>
+      <Nav countUser={this.state.countUser} />
+      <MessageList messagesList={this.state.messages} />
+      <ChatBar currentUser={this.state.currentUser} newUser={this.newUser.bind(this)} newMessage={this.newMessage.bind(this)}/>
       </div>
     );
   }
 }
+
 export default App;

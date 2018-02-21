@@ -5,8 +5,8 @@ class ChatBar extends Component {
     super(props);
     this.state = {
       type: 'postMessage',
-      currentUser: this.props.currentUser,
-      messageText: ''
+      currentUser: this.props.currentUser, // optional. if currentUser is not defined, it means the user is Anonymous
+      messages: ''
     };
   }
 
@@ -18,13 +18,13 @@ class ChatBar extends Component {
     if (event.key === 'Enter') {
       this.props.newMessage({
         type: this.state.type,
-        username: this.state.currentUser,
+        username: this.props.currentUser,
         content: this.state.messageText
       });
+
       this.setState({messageText: ''});
     }
   }
-
 
   onUsernameKeyPress(event) {
     if (event.key === 'Enter') {
@@ -35,16 +35,14 @@ class ChatBar extends Component {
     }
   }
 
-
   onUserTextChange(event) {
     this.setState({currentUser: event.target.value});
   }
 
-
   render() {
     return (
       <footer className="chatbar">
-        <input value={this.state.currentUser}
+        <input value={this.state.currentUser.name}
           onChange={this.onUserTextChange.bind(this)}
           className="chatbar-message" placeholder="Type a message and hit ENTER"
           placeholder="Your Name (Optional)" onKeyPress={this.onUsernameKeyPress.bind(this)} />
@@ -56,4 +54,5 @@ class ChatBar extends Component {
     );
   }
 }
+
 export default ChatBar;
