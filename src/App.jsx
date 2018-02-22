@@ -17,12 +17,7 @@ class App extends Component {
     this.socket = new WebSocket("ws://0.0.0.0:3001");
     this.socket.onmessage =  (message) => {
       let newMessage = JSON.parse(message.data);
-      if (newMessage.type === "incomingNotification") {
-        this.setState({
-          messages : this.state.messages.concat(newMessage)
-        });
-      } else if (newMessage.type === "incomingMessage") {
-        let newMessage = JSON.parse(message.data);
+     if (newMessage.type === "incomingMessage" || newMessage.type === "incomingNotification") {
         let oldMessage = this.state.messages;
         oldMessage.push(newMessage);
         this.setState({
@@ -37,7 +32,6 @@ class App extends Component {
   }
 
   newMessage(message) {
-
     this.socket.send(JSON.stringify(message));
     this.setState({currentUser: { name : message.username}});
   }
