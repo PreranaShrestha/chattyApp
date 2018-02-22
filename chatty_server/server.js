@@ -53,7 +53,8 @@ wss.on('connection', (ws) => {
           type: "incomingNotification",
           newUsername: msg.username,
           userColor: color,
-          id: uuidv4()
+          id: uuidv4(),
+          content: msg.content
         }
         boardcastMessage(newPostMessage);
         break;

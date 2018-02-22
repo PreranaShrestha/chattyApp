@@ -16,14 +16,9 @@ class App extends Component {
   componentDidMount() {
     this.socket = new WebSocket("ws://0.0.0.0:3001");
     this.socket.onmessage =  (message) => {
-
       let newMessage = JSON.parse(message.data);
-      console.log(newMessage);
       if (newMessage.type === "incomingNotification") {
-        var content = this.state.currentUser.name + " has changed name to " + newMessage.newUsername;
-        newMessage.content = content;
         this.setState({
-          currentUser: {name: newMessage.newUsername},
           messages : this.state.messages.concat(newMessage)
         });
       } else if (newMessage.type === "incomingMessage") {
@@ -35,15 +30,16 @@ class App extends Component {
         });
       } else if (newMessage.type === "userCountChange") {
         this.setState({
-          countUser: newMessage.userCount,
-          currentUser: { name: this.state.currentUser.name, userColor: newMessage.userColor}
+          countUser: newMessage.userCount
         });
       }
     }
   }
 
   newMessage(message) {
+
     this.socket.send(JSON.stringify(message));
+    this.setState({currentUser: { name : message.username}});
   }
 
   newUser(user) {
@@ -55,7 +51,7 @@ class App extends Component {
       <div>
       <Nav countUser={this.state.countUser} />
       <MessageList messagesList={this.state.messages} />
-      <ChatBar currentUser={this.state.currentUser} newUser={this.newUser.bind(this)} newMessage={this.newMessage.bind(this)}/>
+      <ChatBar username={this.state.currentUser.name} newUser={this.newUser.bind(this)} newMessage={this.newMessage.bind(this)}/>
       </div>
     );
   }
