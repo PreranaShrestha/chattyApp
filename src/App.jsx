@@ -16,7 +16,9 @@ class App extends Component {
   componentDidMount() {
     this.socket = new WebSocket("ws://0.0.0.0:3001");
     this.socket.onmessage =  (message) => {
+
       let newMessage = JSON.parse(message.data);
+      console.log(newMessage);
       if (newMessage.type === "incomingNotification") {
         var content = this.state.currentUser.name + " has changed name to " + newMessage.newUsername;
         newMessage.content = content;

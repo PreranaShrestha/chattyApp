@@ -22,7 +22,7 @@ class Message extends Component {
           </div>
       );
     }
-    } else if(this.props.type==="incomingNotification") {
+    } else if (this.props.type === "incomingNotification") {
       return (
         <div className="message system">
             {this.props.content}
