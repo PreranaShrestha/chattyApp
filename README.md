@@ -1,6 +1,9 @@
 React Boilerplate
 =====================
 
+## screenshot
+!["ScreenShot of Chatty App"](https://github.com/PreranaShrestha/chattyApp/tree/master/doc)
+
 A minimal and light dev environment for ReactJS.
 
 ### Usage
