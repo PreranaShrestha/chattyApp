@@ -17,12 +17,13 @@ const server = express()
 
 // Create the WebSockets server
 const colorList = ["#00688B", "#a4d7e7", "#00008B", "#00ff00"];
-let colorPicker = 0;
+let colorPicker = -1;
 const wss = new SocketServer({ server });
 
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
+
 
 function boardcastMessage(message) {
   wss.clients.forEach(function each(client) {
@@ -34,7 +35,7 @@ function boardcastMessage(message) {
 
 
 wss.on('connection', (ws) => {
-  colorPicker = colorPicker % 4;
+  colorPicker = colorPicker > 3 ? 0 : colorPicker + 1;
   var color = colorList[colorPicker];
 
   let message = {
@@ -60,7 +61,7 @@ wss.on('connection', (ws) => {
         let newMessage = {
           type: "incomingMessage",
           id: uuidv4(),
-          username: msg.username.name,
+          username: msg.username,
           userColor: color,
           content: msg.content
         }
@@ -78,6 +79,6 @@ wss.on('connection', (ws) => {
       type: "userCountChange",
       userCount: wss.clients.size,
     }
-    oardcastMessage(message);
+    boardcastMessage(message);
   });
 });
