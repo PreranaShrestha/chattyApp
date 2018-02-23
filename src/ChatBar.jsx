@@ -4,7 +4,8 @@ class ChatBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: "Anonymous"
+      currentUser: "Anonymous",
+      messageText: ''
     };
   }
 
