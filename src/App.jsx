@@ -18,10 +18,8 @@ class App extends Component {
     this.socket.onmessage =  (message) => {
       let newMessage = JSON.parse(message.data);
      if (newMessage.type === "incomingMessage" || newMessage.type === "incomingNotification") {
-        let oldMessage = this.state.messages;
-        oldMessage.push(newMessage);
         this.setState({
-          messages: oldMessage
+          messages: [...this.state.messages, newMessage]
         });
       } else if (newMessage.type === "userCountChange") {
         this.setState({
