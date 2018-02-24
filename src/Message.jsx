@@ -4,23 +4,20 @@ function Message({userColor, content, username, type}) {
   const style = {
     color: userColor
   }
-  if(type==="incomingMessage"){
-    var regExp = new RegExp("http(?:\"|\')?(?<imgSrc>[^>]*[^/].(?:jpe?g|bmp|gif|png))(?:\"|\')?");
-    const imageUrl = content.match(regExp);
-    if(imageUrl) {
-      return (
-      <div>
-        <img className="image" src={imageUrl[0]} />
-      </div>
-      );
+  const imgRE = /(https?:\/\/.*\.(?:png|jpg))/i;
+  const textToMU = content.split(imgRE).map(entry => {
+    if (imgRE.test(entry)) {
+      return <img src={entry} />;
     } else {
-    return (
-        <div className="message">
+      return <span >{entry}</span>;
+    }
+  });
+
+  if (type === "incomingMessage"){
+    return (<div className="message">
           <span className="message-username" style={style} >{username}</span>
-          <span className="message-content">{content}</span>
-        </div>
-    );
-  }
+          <span className="message-content">{textToMU}</span>
+        </div>);
   } else if (type === "incomingNotification") {
     return (
       <div className="message system">
